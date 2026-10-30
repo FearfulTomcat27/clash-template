@@ -1,0 +1,210 @@
+# Mihomo 独立配置；HTTP/SOCKS 端口沿用原配置。
+# 控制接口仅监听本机；策略组选择会持久化保存。
+# 公司内部域名可在 nameserver-policy 中补充实际内网 DNS。
+allow-lan: false
+bind-address: 127.0.0.1
+port: 7890
+socks-port: 7891
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+unified-delay: true
+profile:
+  store-selected: true
+dns:
+  enable: true
+  listen: 127.0.0.1:53
+  ipv6: false
+  enhanced-mode: redir-host
+  use-hosts: true
+  use-system-hosts: true
+  respect-rules: false
+  default-nameserver:
+  - 223.5.5.5
+  - 119.29.29.29
+  nameserver: &1
+  - https://dns.alidns.com/dns-query
+  - https://doh.pub/dns-query
+  proxy-server-nameserver: *1
+  nameserver-policy:
+    rule-set:proxy: &2
+    - "https://1.1.1.1/dns-query#\U0001F680 节点选择"
+    - "https://8.8.8.8/dns-query#\U0001F680 节点选择"
+    rule-set:google: *2
+
+# 原配置的完整节点参数。
+proxies:
+- client-fingerprint: chrome
+  flow: xtls-rprx-vision
+  name: DC9|📊1007.96GB
+  network: tcp
+  port: 11221
+  reality-opts:
+    public-key: 9d33O8JDVXZ8s9qAML-Oq1eMIws6xvwcGzsp2u3J3hs
+    short-id: 733098eb
+    support-x25519mlkem768: true
+  server: us.fearfultomcat.top
+  servername: amd.com
+  tls: true
+  type: vless
+  udp: true
+  uuid: 7080a890-392e-4d94-baa1-e733130f22c4
+- alpn:
+  - h3
+  name: Hysteria
+  obfs: salamander
+  obfs-password: 1m844iknps2cont5
+  password: bn6mh1d8llzxtbvk
+  port: 16215
+  server: us.fearfultomcat.top
+  sni: us.fearfultomcat.top
+  type: hysteria2
+  udp: true
+
+proxy-groups:
+- name: "\U0001F680 节点选择"
+  type: select
+  include-all: true
+  proxies:
+  - "♻️ 自动选择"
+  - DIRECT
+- name: "♻️ 自动选择"
+  type: url-test
+  include-all: true
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+- name: "\U0001F34E 苹果服务"
+  type: select
+  proxies:
+  - DIRECT
+  - "\U0001F680 节点选择"
+  - "♻️ 自动选择"
+- name: "\U0001F4F2 电报信息"
+  type: select
+  proxies:
+  - "\U0001F680 节点选择"
+  - "♻️ 自动选择"
+  - DIRECT
+- name: "\U0001F6D1 全球拦截"
+  type: select
+  proxies:
+  - REJECT
+  - DIRECT
+- name: "\U0001F41F 漏网之鱼"
+  type: select
+  proxies:
+  - "\U0001F680 节点选择"
+  - "♻️ 自动选择"
+  - DIRECT
+
+# 远程规则使用独立缓存目录；BT 进程规则随配置保存。
+rule-providers:
+  bt-apps:
+    type: inline
+    behavior: classical
+    format: yaml
+    payload:
+    - PROCESS-NAME,qBittorrent
+    - PROCESS-NAME,qbittorrent
+    - PROCESS-NAME,qbittorrent.exe
+    - PROCESS-NAME,qbittorrent-nox
+    - PROCESS-NAME,Transmission
+    - PROCESS-NAME,transmission-daemon
+    - PROCESS-NAME,transmission-daemon.exe
+    - PROCESS-NAME,transmission-qt.exe
+    - PROCESS-NAME,uTorrent
+    - PROCESS-NAME,uTorrent.exe
+    - PROCESS-NAME,BitComet
+    - PROCESS-NAME,BitComet.exe
+    - PROCESS-NAME,BitComet_x64.exe
+    - PROCESS-NAME,WebTorrent
+    - PROCESS-NAME,WebTorrent.exe
+  apple:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/apple.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
+    format: yaml
+  cncidr:
+    behavior: ipcidr
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/cncidr.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
+    format: yaml
+  direct:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/direct.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+    format: yaml
+  google:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/google.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt
+    format: yaml
+  icloud:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/icloud.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
+    format: yaml
+  lancidr:
+    behavior: ipcidr
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/lancidr.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
+    format: yaml
+  private:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/private.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
+    format: yaml
+  proxy:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/proxy.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt
+    format: yaml
+  reject:
+    behavior: domain
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/reject.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
+    format: yaml
+  telegramcidr:
+    behavior: ipcidr
+    interval: 86400
+    path: "./ruleset/yuyong-optimized/telegramcidr.yaml"
+    type: http
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
+    format: yaml
+
+# 从上到下匹配：本地、BT、广告、服务分类、国内地址、兜底。
+rules:
+- DOMAIN,clash.razord.top,DIRECT
+- DOMAIN,yacd.haishan.me,DIRECT
+- RULE-SET,private,DIRECT
+- RULE-SET,lancidr,DIRECT,no-resolve
+- RULE-SET,bt-apps,DIRECT
+- DOMAIN-SUFFIX,jsdelivr.net,DIRECT
+- "RULE-SET,reject,\U0001F6D1 全球拦截"
+- "RULE-SET,icloud,\U0001F34E 苹果服务"
+- "RULE-SET,apple,\U0001F34E 苹果服务"
+- "RULE-SET,google,\U0001F680 节点选择"
+- "RULE-SET,proxy,\U0001F680 节点选择"
+- RULE-SET,direct,DIRECT
+- "RULE-SET,telegramcidr,\U0001F4F2 电报信息,no-resolve"
+- RULE-SET,cncidr,DIRECT
+- "MATCH,\U0001F41F 漏网之鱼"
